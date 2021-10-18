@@ -1,0 +1,112 @@
+[
+  {
+    "displayName": "Tenants",
+    "Id": "tenants",
+    "allowedOperations": [ "get", "find", "count", "update", "insert", "remove" ],
+    "maxPageSize": 50,
+    "ttl": 3600,
+    "fields": {
+      "_id": {
+        "displayName": "_id",
+        "type": "text",
+        "queryOperators": [ "eq", "lt", "gt", "hasSome", "and", "lte", "gte", "or", "not", "ne", "startsWith", "endsWith" ]
+      },
+      "_owner": {
+        "displayName": "_owner",
+        "type": "text",
+        "queryOperators": [ "eq", "lt", "gt", "hasSome", "and", "lte", "gte", "or", "not", "ne", "startsWith", "endsWith" ]
+      },
+      "tenantname": {
+        "displayName": "Tenant Name",
+        "type": "text",
+        "queryOperators": [ "eq", "lt", "gt", "hasSome", "and", "lte", "gte", "or", "not", "ne", "startsWith", "endsWith" ]
+      },
+      "tenantdesc": {
+        "displayName": "Tenant Description",
+        "type": "text",
+        "queryOperators": [ "eq", "lt", "gt", "hasSome", "and", "lte", "gte", "or", "not", "ne", "startsWith", "endsWith" ]
+      }
+    },
+    "defaultSort": null
+  },
+  {
+    "displayName": "Case Types",
+    "Id": "casetypes",
+    "allowedOperations": [ "get", "find", "count", "update", "insert", "remove" ],
+    "maxPageSize": 50,
+    "ttl": 3600,
+    "fields": {
+      "_id": {
+        "displayName": "_id",
+        "type": "text",
+        "queryOperators": [ "eq", "lt", "gt", "hasSome", "and", "lte", "gte", "or", "not", "ne", "startsWith", "endsWith" ]
+      },
+      "_owner": {
+        "displayName": "_owner",
+        "type": "text",
+        "queryOperators": [ "eq", "lt", "gt", "hasSome", "and", "lte", "gte", "or", "not", "ne", "startsWith", "endsWith" ]
+      },
+      "tenantid": {
+        "displayName": "Tenant Id",
+        "type": "text",
+        "queryOperators": [ "eq", "lt", "gt", "hasSome", "and", "lte", "gte", "or", "not", "ne", "startsWith", "endsWith" ]
+      },
+      "casetypename": {
+        "displayName": "Case Type Description",
+        "type": "text",
+        "queryOperators": [ "eq", "lt", "gt", "hasSome", "and", "lte", "gte", "or", "not", "ne", "startsWith", "endsWith" ]
+      },
+      "casetypedesc": {
+        "displayName": "Case Type Description",
+        "type": "text",
+        "queryOperators": [ "eq", "lt", "gt", "hasSome", "and", "lte", "gte", "or", "not", "ne", "startsWith", "endsWith" ]
+      }
+    },
+    "defaultSort": null
+  },
+  {
+    "displayName": "Case Type Fields",
+    "Id": "casetypefields",
+    "allowedOperations": [ "get", "find", "count", "update", "insert", "remove" ],
+    "maxPageSize": 50,
+    "ttl": 3600,
+    "fields": {
+      "_id": {
+        "displayName": "_id",
+        "type": "text",
+        "queryOperators": [ "eq", "lt", "gt", "hasSome", "and", "lte", "gte", "or", "not", "ne", "startsWith", "endsWith" ]
+      },
+      "_owner": {
+        "displayName": "_owner",
+        "type": "text",
+        "queryOperators": [ "eq", "lt", "gt", "hasSome", "and", "lte", "gte", "or", "not", "ne", "startsWith", "endsWith" ]
+      },
+      "tenantid": {
+        "displayName": "Tenant Id",
+        "type": "text",
+        "queryOperators": [ "eq", "lt", "gt", "hasSome", "and", "lte", "gte", "or", "not", "ne", "startsWith", "endsWith" ]
+      },
+      "casetypeid": {
+        "displayName": "Case Type Id",
+        "type": "text",
+        "queryOperators": [ "eq", "lt", "gt", "hasSome", "and", "lte", "gte", "or", "not", "ne", "startsWith", "endsWith" ]
+      },
+      "fieldname": {
+        "displayName": "Field Name",
+        "type": "text",
+        "queryOperators": [ "eq", "lt", "gt", "hasSome", "and", "lte", "gte", "or", "not", "ne", "startsWith", "endsWith" ]
+      },
+      "fielddesc": {
+        "displayName": "Field Description",
+        "type": "text",
+        "queryOperators": [ "eq", "lt", "gt", "hasSome", "and", "lte", "gte", "or", "not", "ne", "startsWith", "endsWith" ]
+      },
+      "fieldtype": {
+        "displayName": "Field Type",
+        "type": "text",
+        "queryOperators": [ "eq", "lt", "gt", "hasSome", "and", "lte", "gte", "or", "not", "ne", "startsWith", "endsWith" ]
+      }
+    },
+    "defaultSort": null
+  }
+]

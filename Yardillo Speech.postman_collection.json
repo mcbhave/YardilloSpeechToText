@@ -1,0 +1,158 @@
+{
+	"info": {
+		"_postman_id": "619bc518-186a-474d-bdb8-1594223a7797",
+		"name": "Yardillo Speech",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Transcribe",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-RapidAPI-Proxy-Secret",
+						"value": "{{mbadrapidkey}}",
+						"type": "text"
+					},
+					{
+						"key": "x-rapidapi-host",
+						"value": "{{rapidapihost}}",
+						"type": "text"
+					},
+					{
+						"key": "x-rapidapi-key",
+						"value": "{{rapidapikey}}",
+						"type": "text"
+					},
+					{
+						"key": "X-RapidAPI-User",
+						"value": "{{X-RapidAPI-User}}",
+						"type": "text"
+					},
+					{
+						"key": "Y-Auth-Src",
+						"value": "{{Y-Auth-Src}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"audio_url\": \"https://s3.amazonaws.com/appforest_uf/f1634319468927x567028752657064300/1634296259943x524509338608111400.mp3\"\r\n,\"webhook_url\":\"https://postb.in/1561597007927-8767862515524\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/Speech",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"Speech"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Speech Map",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "X-RapidAPI-Proxy-Secret",
+						"value": "{{mbadrapidkey}}",
+						"type": "text"
+					},
+					{
+						"key": "x-rapidapi-host",
+						"value": "{{rapidapihost}}",
+						"type": "text"
+					},
+					{
+						"key": "x-rapidapi-key",
+						"value": "{{rapidapikey}}",
+						"type": "text"
+					},
+					{
+						"key": "X-RapidAPI-User",
+						"value": "{{X-RapidAPI-User}}",
+						"type": "text"
+					},
+					{
+						"key": "Y-Auth-Src",
+						"value": "{{Y-Auth-Src}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Labeltext\": \"100012\",\r\n    \"Phrasetext\":\"women\",\r\n    \"Alttext\":\"Use person instead of women\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/Speech/id",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"Speech",
+						"id"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Transcript get by Id",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-RapidAPI-Proxy-Secret",
+						"value": "{{mbadrapidkey}}",
+						"type": "text"
+					},
+					{
+						"key": "x-rapidapi-host",
+						"value": "{{rapidapihost}}",
+						"type": "text"
+					},
+					{
+						"key": "x-rapidapi-key",
+						"value": "{{rapidapikey}}",
+						"type": "text"
+					},
+					{
+						"key": "X-RapidAPI-User",
+						"value": "{{X-RapidAPI-User}}",
+						"type": "text"
+					},
+					{
+						"key": "Y-Auth-Src",
+						"value": "{{Y-Auth-Src}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/Speech/f6eknghg6-e918-4e18-8d0e-0374ce2e8658",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"Speech",
+						"f6eknghg6-e918-4e18-8d0e-0374ce2e8658"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

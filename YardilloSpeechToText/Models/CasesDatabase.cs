@@ -1,0 +1,45 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace MBADCases.Models
+{
+    public class CasesDatabaseSettings : ICasesDatabaseSettings
+    {
+        public string CasesCollectionName { get; set; }
+        public string ConnectionString { get; set; }
+        public string DatabaseName { get; set; }
+        public string MessagesCollectionName { get; set ; }
+        public string CaseTypesCollectionName { get; set; }
+        public string Caseactivityhistorycollection { get; set; }
+        public string ActionAuthLogscollection { get; set; }
+
+        public string Adapterscollection { get; set; }
+        public string Vaultcollection { get; set; }
+
+        public string AdapterLogscollection { get; set; }
+        public string SchedulesCollectionName { get; set; }
+        public string SpeechToTextCollection { get; set; }
+        public string SpeechToTextMAPCollection { get; set; }
+    }
+
+    public interface ICasesDatabaseSettings
+    {
+        string CasesCollectionName { get; set; }
+        string CaseTypesCollectionName { get; set; }
+        string MessagesCollectionName { get; set; }
+        string ConnectionString { get; set; }
+        string DatabaseName { get; set; }
+        public string Caseactivityhistorycollection { get; set; }
+        public string ActionAuthLogscollection { get; set; }
+        public string Adapterscollection { get; set; }
+        public string Vaultcollection { get; set; }
+        public string AdapterLogscollection { get; set; }
+        public string SchedulesCollectionName { get; set; }
+
+        public string SpeechToTextCollection { get; set; }
+        public string SpeechToTextMAPCollection { get; set; }
+
+    }
+}

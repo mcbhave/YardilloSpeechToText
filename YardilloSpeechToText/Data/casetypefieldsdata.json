@@ -1,0 +1,29 @@
+[
+  {
+    "_id": "1",
+    "_owner": "12",
+    "tenantid": "1",
+    "casetypeid": "1",
+    "fieldname": "Field 1",
+    "fielddesc": "Case Type One", 
+    "fieldtype": "TEXT"
+  },
+  {
+    "_id": "2",
+    "_owner": "12",
+    "tenantid": "1",
+    "casetypeid": "1",
+    "fieldname": "Field 2",
+    "fielddesc": "Case Type two", 
+    "fieldtype": "TEXT"
+  },
+  {
+    "_id": "3",
+    "_owner": "12",
+    "tenantid": "1",
+    "casetypeid": "1",
+    "fieldname": "Field 3",
+    "fielddesc": "Case Type three", 
+    "fieldtype": "TEXT"
+  }
+]
