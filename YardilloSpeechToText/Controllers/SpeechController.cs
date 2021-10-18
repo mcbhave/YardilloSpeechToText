@@ -96,7 +96,8 @@ namespace MBADCases.Controllers
                 }
                 otran.Createuser = yathuidde;
                 otran.Createdate = DateTime.UtcNow.ToString();
-
+                otran.Updateuser = yathuidde;
+                otran.Updatedate = DateTime.UtcNow.ToString();
                 bool ucache=  true;
                 if (usecache!=null && usecache.ToLower() == "false")
                 {
@@ -113,7 +114,27 @@ namespace MBADCases.Controllers
                 osp.text = oRet.AIResponse.text;
 
                 osp.words = oRet.AIResponse.words;
-                osp.phrases = oRet.AIResponse.phrases;
+                if (oRet.AIResponse.phrases.Count == 0)
+                {
+                    var ophrase = new phrase() { text = "No passphrase found", feedback = "", confidence = 0.9999, start = 0, end = 0, occurances = 0 };
+                    oRet.AIResponse.phrases.Add(ophrase);
+                    osp.phrases = oRet.AIResponse.phrases;
+                }
+                else
+                {
+                    osp.phrases = oRet.AIResponse.phrases;
+                }
+                if (oRet.AIResponse.commonnames.Count == 0)
+                {
+                    var ocommonname = new commonname() { name = "No common names found",   tipnote="", start = 0, end = 0, occurances = 0 };
+                    oRet.AIResponse.commonnames.Add(ocommonname);
+                    osp.commonnames = oRet.AIResponse.commonnames;
+                }
+                else
+                {
+                    osp.commonnames = oRet.AIResponse.commonnames;
+                }
+                 
                 osp.feedbackcount = oRet.AIResponse.feedbackcount ;
                 osp.audio_duration = oRet.AIResponse.audio_duration;
                 oms = _speechtotextservice.SetMessage(ICallerType.CASE, "", "", "POST", "UPDATE", "SpeechtoText", usrid, null);

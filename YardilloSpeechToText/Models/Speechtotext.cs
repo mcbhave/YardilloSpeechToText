@@ -79,16 +79,29 @@ namespace MBADCases.Models
         public bool iab_categories { get; set; }
         public ContentSafetyLabels content_safety_labels { get; set; }
         public IabCategoriesResult iab_categories_result { get; set; }
-        public List<phrase> phrases { get; set; } 
+        public List<phrase> phrases { get; set; }
+
+        public List<commonname> commonnames { get; set; }
         public int feedbackcount { get; set; }
 }
+
+    public class commonname
+    {
+        public string name { get; set; }
+        public string tipnote { get; set; }
+        public int end { get; set; }
+        public int start { get; set; }
+        public int occurances { get; set; }
+    }
     public class phrase
     {
-        public string confidence { get; set; }
-        public string end { get; set; }
-        public string start { get; set; }
+        public object confidence { get; set; }
+        public int end { get; set; }
+        public int start { get; set; }
         public string text { get; set; }
         public string feedback { get; set; }
+
+        public int occurances { get; set; }
     }
     public class ContentSafetyLabels
     {
@@ -100,9 +113,9 @@ namespace MBADCases.Models
 
     public class owords
     {
-        public string confidence { get; set; }
-        public string end { get; set; }
-        public string start { get; set; }
+        public object confidence { get; set; }
+        public int end { get; set; }
+        public int start { get; set; }
         public string text { get; set; }
         public string feedback { get; set; }
     }
@@ -113,8 +126,9 @@ namespace MBADCases.Models
         public object text { get; set; }
         public List<owords> words { get; set; }
         public List<phrase> phrases { get; set; }
+        public List<commonname> commonnames { get; set; }
         public int feedbackcount { get; set; }
-        public object audio_duration { get; set; }
+        public int audio_duration { get; set; }
     }
 
 }

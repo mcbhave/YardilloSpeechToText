@@ -361,3 +361,12 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/Book1.csv
+/Book3.csv
+/first names.xlsx
+/first names.txt
+/first names.csv
+/commonnames2.csv
+/commonnames.json
+/commonnames.csv
+/Book3_samplenames.csv

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using YardilloSpeechToText.Models;
 
 namespace MBADCases.Services
 {
@@ -14,6 +15,7 @@ namespace MBADCases.Services
     {
         private IMongoCollection<Speechtotext> _speechtotextcollection;
         private IMongoCollection<Speechtotextmap> _Speechtotextmap;
+        private IMongoCollection<commonnamesmap> _commonnamesmap;
         private IMongoDatabase MBADDatabase;
         private IMongoDatabase TenantDatabase;
         ICasesDatabaseSettings _settings;
@@ -38,11 +40,14 @@ namespace MBADCases.Services
                 TenantDatabase = helperservice.Gettenant(tenantid, _client, MBADDatabase, _settings);
                 _speechtotextcollection = TenantDatabase.GetCollection<Speechtotext>(_settings.SpeechToTextCollection);
                 _Speechtotextmap = TenantDatabase.GetCollection<Speechtotextmap>(_settings.SpeechToTextMAPCollection);
-                 
+                _commonnamesmap = TenantDatabase.GetCollection<commonnamesmap>(_settings.CommonnamesCollection);
+
                 _tenantid = tenantid;
 
                 var indexKeysDefinition = Builders<Speechtotextmap>.IndexKeys.Ascending(hamster => hamster.Phrasetext);
                 _Speechtotextmap.Indexes.CreateOneAsync(new CreateIndexModel<Speechtotextmap>(indexKeysDefinition));  
+
+
             }
             catch { throw; };
         }
@@ -93,7 +98,7 @@ namespace MBADCases.Services
                     otran.Duration = oRet.audio_duration;
                     otran.TranId = id;
                     otran.audio_url = oRet.audio_url;
-
+                    oRet.phrases = new List<phrase>();
                     Getsuggestions(oRet, feedbackcount);
 
                     otran.AIResponse = oRet;
@@ -196,14 +201,14 @@ namespace MBADCases.Services
                 //sanatize the word
                 string smatchword;//= oRet.text.Replace(".", "");
 
-                string sbegin = "\\b(?:";
-                string swords=string.Empty;
+                //string sbegin = "\\b(?:";
+                //string swords=string.Empty;
                 foreach (owords ow in oRet.words)
                 {
                     smatchword = ow.text.Replace(".","").TrimStart().TrimEnd();
-                    swords =   swords + "|" + ow.text;
+               //     swords =   swords + "|" + ow.text;
                 
-               string  sregex = sbegin + swords + ")\\b";
+               //string  sregex = sbegin + swords + ")\\b";
 
                 //var gmailFilter = Builders<Speechtotextmap>.Filter.Regex(u => u.Phrasetext, new BsonRegularExpression(sregex));
                 //var c = _Speechtotextmap.Find(u => u.Phrasetext.ToUpper()==ow.text.ToUpper()).ToList<Speechtotextmap>();
@@ -228,17 +233,27 @@ namespace MBADCases.Services
                                 else
                                 {
                                     //phrase and add it
-                                  
-                                    var ophrase = new phrase() { text = w.Phrasetext, feedback = w.Feedbacktext };
                                     if (oRet.phrases == null) { oRet.phrases = new List<phrase>(); }
-                                
-                                    if (oRet.phrases.Find(f => f.text.ToUpper() == w.Phrasetext.ToUpper()) == null)
+                                    int startpos =oRet.text.IndexOf(w.Phrasetext);
+                                    int endpos = startpos + w.Phrasetext.Length;
+                                    var ophrase = new phrase() { text = w.Phrasetext, feedback = w.Feedbacktext, confidence = 0.9998, start =  startpos,end=endpos, occurances=1 };
+                                   var oexistingphrase= oRet.phrases.Find(f => f.text.ToUpper() == w.Phrasetext.ToUpper());
+                                    if (oexistingphrase== null)
                                     {
                                         oRet.phrases.Add(ophrase);
                                         feedbackcount +=1;
                                     }
+                                    
                                    
-                                     
+                                }
+
+                                //get the common names
+                                if (oRet.commonnames == null) { oRet.commonnames = new List<commonname>(); }
+                                commonnamesmap commonname = _commonnamesmap.Find(c => c.name.ToUpper() == smatchword.ToUpper()).FirstOrDefault();
+                                if (commonname != null)
+                                {
+                                    var ocomname = new commonname() { name = commonname.name, tipnote = commonname.tipnote};
+                                    oRet.commonnames.Add(ocomname);
                                 }
 
                             }

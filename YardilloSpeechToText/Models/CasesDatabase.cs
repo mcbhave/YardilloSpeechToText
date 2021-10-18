@@ -22,6 +22,7 @@ namespace MBADCases.Models
         public string SchedulesCollectionName { get; set; }
         public string SpeechToTextCollection { get; set; }
         public string SpeechToTextMAPCollection { get; set; }
+        public string CommonnamesCollection { get; set; }
     }
 
     public interface ICasesDatabaseSettings
@@ -40,6 +41,8 @@ namespace MBADCases.Models
 
         public string SpeechToTextCollection { get; set; }
         public string SpeechToTextMAPCollection { get; set; }
+
+        public string CommonnamesCollection { get; set; }
 
     }
 }
