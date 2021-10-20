@@ -15,12 +15,15 @@ namespace MBADCases.Models
         public string TranId { get; set; }
         public string audio_url { get; set; }
         public int Duration { get; set; }
+        public string Status { get; set; }
         public string Createdate { get; set; }
         public string Createuser { get; set; }
         public string Updatedate { get; set; }
         public string Updateuser { get; set; }
         public AAIResponse AIResponse { get; set; }
-         
+
+        public string error { get; set; }
+
     }
     public class Speechtotextmap
     {
@@ -43,9 +46,35 @@ namespace MBADCases.Models
         public string audio_url { get; set; }
         public string webhook_url { get; set; }
     }
-    public class AAIResponse
+
+    public class AAITranscriptResponse
     {
-      
+        public string id { get; set; }
+        public string status { get; set; }
+        public string acoustic_model { get; set; }
+        public object audio_duration { get; set; }
+        public string audio_url { get; set; }
+        public object confidence { get; set; }
+        public object dual_channel { get; set; }
+        public bool format_text { get; set; }
+        public string language_model { get; set; }
+        public bool punctuate { get; set; }
+        public object text { get; set; }
+        public object utterances { get; set; }
+        public object webhook_status_code { get; set; }
+        public object webhook_url { get; set; }
+        public object words { get; set; }
+    }
+    public class AAIErrorResponse
+    {
+        public string id { get; set; }
+        public string status { get; set; }
+        public string  error { get; set; }
+    }
+
+        public class AAIResponse
+    {
+       
         public string id { get; set; }
         public string language_model { get; set; }
         public string acoustic_model { get; set; }
@@ -81,14 +110,19 @@ namespace MBADCases.Models
         public IabCategoriesResult iab_categories_result { get; set; }
         public List<phrase> phrases { get; set; }
 
+        public List<feedback> feedback { get; set; }
+        public string error { get; set; }
         public List<commonname> commonnames { get; set; }
         public int feedbackcount { get; set; }
-}
+        public int totalfeedbackcount { get; set; }
+
+       
+    }
 
     public class commonname
     {
         public string name { get; set; }
-        public string tipnote { get; set; }
+        public string tip { get; set; }
         public int end { get; set; }
         public int start { get; set; }
         public int occurances { get; set; }
@@ -101,6 +135,17 @@ namespace MBADCases.Models
         public string text { get; set; }
         public string feedback { get; set; }
 
+        public int occurances { get; set; }
+    }
+    public class feedback
+    {
+        public object confidence { get; set; }
+        public int end { get; set; }
+        public int start { get; set; }
+
+        public string phrase { get; set; }
+        public string text { get; set; }
+        
         public int occurances { get; set; }
     }
     public class ContentSafetyLabels
@@ -122,13 +167,25 @@ namespace MBADCases.Models
     public class SppechToTextResponse
     {
         public string _id { get; set; }
+        public string tenantid { get; set; }
         public string status { get; set; }
-        public object text { get; set; }
+        public string error { get; set; }
+        public int audio_duration { get; set; }
+        public int feedbackcount { get; set; }
+        public int totalfeedbackcount { get; set; }
+        public object confidence { get; set; }
+        public string text { get; set; }
+        public int total_words { get; set; }
+        public int total_phrases { get; set; }
+        public int total_commonnames { get; set; }
         public List<owords> words { get; set; }
         public List<phrase> phrases { get; set; }
         public List<commonname> commonnames { get; set; }
-        public int feedbackcount { get; set; }
-        public int audio_duration { get; set; }
+
+        public List<feedback> feedback { get; set; }
+
+
+
     }
 
 }

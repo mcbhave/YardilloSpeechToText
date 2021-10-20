@@ -40,7 +40,7 @@ namespace MBADCases.Services
                 TenantDatabase = helperservice.Gettenant(tenantid, _client, MBADDatabase, _settings);
                 _speechtotextcollection = TenantDatabase.GetCollection<Speechtotext>(_settings.SpeechToTextCollection);
                 _Speechtotextmap = TenantDatabase.GetCollection<Speechtotextmap>(_settings.SpeechToTextMAPCollection);
-                _commonnamesmap = TenantDatabase.GetCollection<commonnamesmap>(_settings.CommonnamesCollection);
+                _commonnamesmap = MBADDatabase.GetCollection<commonnamesmap>(_settings.CommonnamesCollection);
 
                 _tenantid = tenantid;
 
@@ -58,16 +58,23 @@ namespace MBADCases.Services
             //Speechtotext osptotxt = new Speechtotext();
             string responseBody = string.Empty;
             int feedbackcount = 0;
+            int totalfeedbackcount = 0;
             try
             {
                 Speechtotext c = _speechtotextcollection.Find(c => c.TranId == id).FirstOrDefault();
                 if (c == null)
                 {
+                    AAIResponse oRet = new AAIResponse();
+
                     HttpClient _client = new HttpClient();
                     _client.DefaultRequestHeaders.Add("authorization", _assemblyai_server_token);
 
                     //var serialized = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(osptxt), Encoding.UTF8, "application/json");
                     string surl = _assemblyai_server_url + "/" + id;
+
+                    try
+                    {
+
                     using (HttpResponseMessage response = _client.GetAsync(surl).GetAwaiter().GetResult())
                     {
                         response.EnsureSuccessStatusCode();
@@ -75,20 +82,78 @@ namespace MBADCases.Services
                         responseBody = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
                         slog.Append(responseBody);
                     }
-
-
-                    AAIResponse oRet = Newtonsoft.Json.JsonConvert.DeserializeObject<AAIResponse>(responseBody);
-                    otran.Duration = oRet.audio_duration;
-                    otran.TranId = id;
-                    otran.audio_url = oRet.audio_url;
-
-                    Getsuggestions(oRet, feedbackcount);
+                    }
+                    catch(Exception eee)
+                    {
+                        oRet.feedback = new List<feedback>();
+                        oRet.commonnames = new List<commonname>();
+                        oRet.phrases = new List<phrase>();
+                        oRet.words = new List<owords>();
+                        otran.Duration = 0;
+                        otran.Status = "error";
+                        otran.TranId = id;
+                        otran.audio_url = oRet.audio_url;
+                        otran.error = eee.ToString();
+                        oRet.status = "error";
+                        oRet.error = eee.ToString();
+                        return otran;
+                    }
                     
-
+                    if (responseBody!=null || responseBody != "")
+                    {                      
+                        try
+                        {
+                            oRet = Newtonsoft.Json.JsonConvert.DeserializeObject<AAIResponse>(responseBody);
+                            otran.Duration = oRet.audio_duration;
+                            otran.TranId = id;
+                            otran.audio_url = oRet.audio_url;
+                            otran.Status = oRet.status;
+                            oRet.error = oRet.error;
+                            oRet.confidence = oRet.confidence;
+                        }
+                        catch 
+                        {
+                            oRet.feedback = new List<feedback>();
+                            oRet.commonnames = new List<commonname>();
+                            oRet.phrases = new List<phrase>();
+                            oRet.words = new List<owords>();
+                            AAIErrorResponse oerr = Newtonsoft.Json.JsonConvert.DeserializeObject<AAIErrorResponse>(responseBody);
+                            otran.Duration = 0;
+                            otran.Status = oerr.status;
+                            otran.TranId = id;
+                            otran.audio_url = oRet.audio_url;
+                            otran.error = oerr.error;
+                            oRet.status = oerr.status;
+                            oRet.error = oerr.error;
+                            return otran;
+                        }   
+                    }
+                    else
+                    {
+                        oRet.feedback = new List<feedback>();
+                        oRet.commonnames = new List<commonname>();
+                        oRet.phrases = new List<phrase>();
+                        oRet.words = new List<owords>();
+                        otran.Duration = 0;
+                        otran.Status = "error";
+                        otran.TranId = id;
+                        otran.audio_url = oRet.audio_url;
+                        otran.error = "No response from AI CODE:000001";
+                        oRet.status = "error";
+                        oRet.error = "No response from AI CODE:000001";
+                        return otran;
+                    }
+                    if (oRet.status == "completed")
+                    {
+                        oRet.feedback = new List<feedback>();
+                        oRet.commonnames = new List<commonname>();
+                        oRet.phrases = new List<phrase>();
+                        
+                        Getsuggestions(oRet, feedbackcount, totalfeedbackcount);
+                    }
+                   
                     otran.AIResponse = oRet;
-
                     _speechtotextcollection.InsertOneAsync(otran);
-
                     return otran;
                 }
 
@@ -98,13 +163,27 @@ namespace MBADCases.Services
                     otran.Duration = oRet.audio_duration;
                     otran.TranId = id;
                     otran.audio_url = oRet.audio_url;
-                    oRet.phrases = new List<phrase>();
-                    Getsuggestions(oRet, feedbackcount);
+                    
+                    if (oRet.status == "completed")
+                    {
+                                             
+                        Getsuggestions(oRet, feedbackcount, totalfeedbackcount);
+                    }
+
+                    
 
                     otran.AIResponse = oRet;
 
                     otran._id = c._id;
-                    _speechtotextcollection.ReplaceOne(ocase => ocase._id == c._id, otran);
+                    otran.TranId = c.TranId;
+                    otran.Createdate = c.Createdate;
+                    otran.Createdate = c.Createuser;
+                    otran.Status = c.Status;
+                    otran.error = c.error;
+                    if (oRet.status == "completed")
+                    {
+                        _speechtotextcollection.ReplaceOne(ocase => ocase._id == c._id, otran);
+                    }
                     return otran;
                 }
                 return c;
@@ -134,7 +213,7 @@ namespace MBADCases.Services
          
            
         }
-        public AAIResponse PostSpeech(AAIRequest osptxt)
+        public AAITranscriptResponse PostSpeech(AAIRequest osptxt)
         {
             StringBuilder slog = new StringBuilder();
             Speechtotext osptotxt = new Speechtotext();
@@ -143,7 +222,8 @@ namespace MBADCases.Services
             {
                 HttpClient _client = new HttpClient();
                 _client.DefaultRequestHeaders.Add("authorization", _assemblyai_server_token);
-
+                if (osptxt.audio_url == null) { throw new Exception("audio_url can not be blank."); }
+                if (osptxt.audio_url.StartsWith("//") == true) { osptxt.audio_url = "https:" + osptxt.audio_url; }
                 var serialized = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(osptxt), Encoding.UTF8, "application/json");
 
                 using (HttpResponseMessage response = _client.PostAsync(_assemblyai_server_url, serialized).GetAwaiter().GetResult())
@@ -155,7 +235,7 @@ namespace MBADCases.Services
 
                 }
 
-                AAIResponse oairesp = Newtonsoft.Json.JsonConvert.DeserializeObject<AAIResponse>(responseBody);
+                AAITranscriptResponse oairesp = Newtonsoft.Json.JsonConvert.DeserializeObject<AAITranscriptResponse>(responseBody);
                 //slog.AppendLine(",Message:" + omess._id + " " + omess.message_text + ", EMAIL SENT : " + ouser.authentication.email.email);
                 return oairesp;
             }
@@ -193,23 +273,21 @@ namespace MBADCases.Services
 
         }
 
-        public void Getsuggestions(AAIResponse oRet, int feedbackcount)
+        public void Getsuggestions(AAIResponse oRet, int feedbackcount,int totaloccurances)
         {
-
             try
             {
+               
+                if (oRet.words == null) { throw new Exception("Transcription failed or file is empty. " + oRet.error); };
                 //sanatize the word
                 string smatchword;//= oRet.text.Replace(".", "");
-
                 //string sbegin = "\\b(?:";
                 //string swords=string.Empty;
-                foreach (owords ow in oRet.words)
+                foreach (owords ow in  oRet.words)
                 {
-                    smatchword = ow.text.Replace(".","").TrimStart().TrimEnd();
-               //     swords =   swords + "|" + ow.text;
-                
+                    smatchword = ow.text.Replace(".","").Replace(",","").TrimStart().TrimEnd();
+               //     swords =   swords + "|" + ow.text;              
                //string  sregex = sbegin + swords + ")\\b";
-
                 //var gmailFilter = Builders<Speechtotextmap>.Filter.Regex(u => u.Phrasetext, new BsonRegularExpression(sregex));
                 //var c = _Speechtotextmap.Find(u => u.Phrasetext.ToUpper()==ow.text.ToUpper()).ToList<Speechtotextmap>();
              List<Speechtotextmap> c = _Speechtotextmap.Find(c => c.Phrasetext.ToUpper().Contains( smatchword.ToUpper())).ToList<Speechtotextmap>();
@@ -219,7 +297,8 @@ namespace MBADCases.Services
                         {
                             if(oRet.text.Contains(w.Phrasetext, StringComparison.OrdinalIgnoreCase))
                             {
-                                owords sword= oRet.words.Find(x => x.text.ToUpper() == w.Phrasetext.ToUpper());
+                               List<owords> tempwords =  oRet.words;
+                                owords sword= tempwords.Find(x => x.text.ToUpper() == w.Phrasetext.ToUpper());
                                 if (sword != null)
                                 {
                                     //its a word
@@ -227,8 +306,9 @@ namespace MBADCases.Services
                                     {
                                         sword.feedback = w.Feedbacktext;
                                         feedbackcount += 1;
-                                    }
-                                  
+
+                                        oRet.feedback.Add(new feedback { confidence=sword.confidence, start=sword.start,end=sword.end, phrase= sword.text, text= sword.feedback });
+                                    }                                 
                                 }
                                 else
                                 {
@@ -242,27 +322,44 @@ namespace MBADCases.Services
                                     {
                                         oRet.phrases.Add(ophrase);
                                         feedbackcount +=1;
+                                        totaloccurances += 1;
+                                        oRet.feedback.Add(new feedback { text = w.Feedbacktext, phrase = w.Phrasetext, confidence = 0.9998, start = startpos, end = endpos, occurances = 1 });
                                     }
-                                    
-                                   
+                                    else
+                                    {
+                                        oexistingphrase.occurances += 1;
+                                        totaloccurances += 1;
+                                    } 
                                 }
-
-                                //get the common names
-                                if (oRet.commonnames == null) { oRet.commonnames = new List<commonname>(); }
-                                commonnamesmap commonname = _commonnamesmap.Find(c => c.name.ToUpper() == smatchword.ToUpper()).FirstOrDefault();
-                                if (commonname != null)
-                                {
-                                    var ocomname = new commonname() { name = commonname.name, tipnote = commonname.tipnote};
-                                    oRet.commonnames.Add(ocomname);
-                                }
+                            }                           
+                        }
+                        //get the common names
+                        if (oRet.commonnames == null) { oRet.commonnames = new List<commonname>(); }
+                        commonnamesmap commonname = _commonnamesmap.Find(c => c.name.ToUpper() == smatchword.ToUpper()).FirstOrDefault();
+                        if (commonname != null)
+                        {
+                            var ocomname = new commonname() { name = commonname.name, tip = commonname.tip,occurances=1 };
+                            var oexistingcomname = oRet.commonnames.Find(f => f.name.ToUpper() == smatchword.ToUpper());
+                            if (oexistingcomname == null)
+                            {
+                                oRet.commonnames.Add(ocomname);
+                                feedbackcount += 1;
+                                totaloccurances += 1;
 
                             }
+                            else
+                            {
+                                oexistingcomname.occurances += 1;
+                                feedbackcount += 1;
+                                totaloccurances += 1;
+                            }
+                            
                         }
-                    
                     }
                 }
 
                 oRet.feedbackcount = feedbackcount;
+                oRet.totalfeedbackcount = totaloccurances;
             }
             catch
             {

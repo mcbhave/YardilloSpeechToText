@@ -9,7 +9,7 @@ namespace MBADCases.Models
         {
             _id = id;
             //Casenumber = ocase.Casenumber;
-            Message = new MessageResponse() { Messagecode = oms.Messagecode,   Messageype = oms.Messageype, _id = oms._id };
+            Message = new MessageResponse() { Messagecode = oms.Messagecode,   Messageype = oms.Messageype, _id = oms._id ,Messagedesc = oms.MessageDesc};
         }
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]

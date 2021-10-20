@@ -13,7 +13,7 @@ namespace YardilloSpeechToText.Models
         [BsonRepresentation(BsonType.ObjectId)]
         public string _id { get; set; }
         public string name { get; set; }
-        public string tipnote { get; set; }
+        public string tip { get; set; }
 
     }
 }

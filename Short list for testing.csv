@@ -1,0 +1,68 @@
+Labeltext,Phrasetext,Feedbacktext
+1,the blind,This phrase suggests victimhood. Consider using the term 'people who are blind' or 'have low vision'. 
+1,deaf and dumb,This phrase suggests victimhood. Consider using the term 'person who is deaf'. 
+1,autistic child,This phrase suggests victimhood. Consider using the term 'child has autism'. 
+1,is epileptic,This phrase suggests victimhood. Consider using the term 'has epilepsy'. 
+1,has fits,This phrase suggests victimhood. Consider using the term 'has epilepsy'. 
+1,retarded,"This phrase suggests victimhood. Consider using the term 'person with intellectual, cognitive, developmental disability'. "
+1,slow,"This phrase suggests victimhood. Consider using the term 'person with intellectual, cognitive, developmental disability'. "
+1,idiot,"This phrase suggests victimhood. Consider using the term 'person with intellectual, cognitive, developmental disability'. "
+1,moron,"This phrase suggests victimhood. Consider using the term 'person with intellectual, cognitive, developmental disability'. "
+1,crazy,This phrase suggests victimhood. Consider using the term 'person with psychiatric disability or mental illness'. 
+1,insane,This phrase suggests victimhood. Consider using the term 'person with psychiatric disability or mental illness'. 
+1,nuts,This phrase suggests victimhood. Consider using the term 'person with psychiatric disability or mental illness'. 
+1,psycho,This phrase suggests victimhood. Consider using the term 'person with psychiatric disability or mental illness'. 
+1,dwarf,This phrase suggests victimhood. Consider using the term 'person of short stature'.
+1,midget,This phrase suggests victimhood. Consider using the term 'person of short stature'.
+1,has a birth defect,This phrase suggests victimhood. Consider using the term 'has a congenital disability'. 
+1,wheelchair bound,This phrase suggests victimhood. Consider using the term 'person who uses a wheelchair'.
+1,confined to a chair,This phrase suggests victimhood. Consider using the term 'person who uses a wheelchair'.
+2,guys,"""Guys” is not gender neutral. “The ”universal male” (i.e., using “guys” to mean “people”) assumes that the normal, default human being is male. “Although “he” and “man” are said to be neutral, numerous studies show that these words cause people specifically to think of males."
+2,girl,"For anyone over 18 years old, woman is a better choice"
+2,girls,"For anyone over 18 years old, women is a better choice"
+3,grandfather clause,A way to exempt some people from a change because of conditions that existed before the change (e.g. we’ve grandfathered some users on an unlimited data plan.”) The term “grandfather clause” originated in the American South in the 1890s as a way to defy the 15th Amendment and prevent black Americans from voting. A good alternative might be “legacy”
+3,grandfathering ,A way to exempt some people from a change because of conditions that existed before the change (e.g. we’ve grandfathered some users on an unlimited data plan.”) The term “grandfather clause” originated in the American South in the 1890s as a way to defy the 15th Amendment and prevent black Americans from voting. A good alternative might be “legacy”
+3,Gypped,"Racial slur for being defrauded, swindled or cheated. According to the Oxford English Dictionary, the term is “probably an abbreviation of ‘gypsy,’ a word commonly used to describe the Romani people."
+2,Females,"To many English speakers, “females” sounds like a scientific designation one would use for animals or plants. Try “women” instead."
+2,Hacker,"In job descriptions, the term ”hacker” can be tough for many to identify with. Hackbright Academy, an engineering fellowship for women, works with many organizations to revisit their job listings in order to paint a clearer picture of what it’s like working there. Alternatives: engineer, developer"
+1,Handicap,"Some disability advocates believe this term is rooted in a correlation between a disabled individual and a beggar, “who had to beg with a cap in his or her hand because of the inability to maintain employment.” Better alternative: Disabled"
+2,Housekeeping,"In reference to office work, this language can feel gendered. Suggested alternative: maintenance, cleanup"
+2,Ladies,"Terms like “ladies”, “gals” or others can feel patronizing to some. Try women instead, or “folks” or “people” for mixed-gender groups."
+2,gals,"Terms like “ladies”, “gals” or others can feel patronizing to some. Try women instead, or “folks” or “people” for mixed-gender groups."
+1,lame,"Originally used in reference to people with reduced mobility, now often a synonym for “uncool.” Both types of uses are ableist."
+2,lower the bar,"A phrase based on the erroneous idea that a company has to relax hiring standards in order to add people from different racial/ethnic/gender backgrounds. In fact, in many cases it’s the opposite: companies have a poorly designed hiring bar that fails to adequately evaluate highly qualified, and often diverse, candidates."
+2,man hours,"As a synonym for work – as in “man hours,” “man the inbox,” “man the conference booth,” – this is unnecessarily gendered language. Try using work instead."
+2,man the conference,"As a synonym for work – as in “man hours,” “man the inbox,” “man the conference booth,” – this is unnecessarily gendered language. Try using work instead."
+3,master,"Problematic term sometimes used to refer to one machine that has the original copy of data and others that automatically update themselves to match its data. Replacements include primary/replica, primary/standby."
+3,slave,"Problematic term sometimes used to refer to one machine that has the original copy of data and others that automatically update themselves to match its data. Replacements include primary/replica, primary/standby."
+1,meritocracy,"Belief in the flawed idea that hard work and talent alone are all that’s needed to achieve success. Challenges like implicit bias, structural inequality and varying degrees of privilege or disadvantage mean meritocracy isn’t currently a reality."
+2,mom test,"A sexist term for putting a product in front of unfamiliar visitors to learn more how they would use it. The assumption that if such a person can use a program, anyone can, is both sexist and ageist. Alternatives: user testing"
+2,girlfriend test,"A sexist term for putting a product in front of unfamiliar visitors to learn more how they would use it. The assumption that if such a person can use a program, anyone can, is both sexist and ageist. Alternatives: user testing"
+2,Ninja,Words sometimes used in tech job descriptions that can skew towards a gendered interpretation and discourage some groups from applying.
+2,rockstar,Words sometimes used in tech job descriptions that can skew towards a gendered interpretation and discourage some groups from applying.
+2,open the kimono,Problematic business jargon for disclosing information about the workings of a company. It has sexist and racist overtones.
+3,peanut gallery,"This term for heckling or unwanted disturbance originates in the 1920s when the peanut gallery referred to the back section of theaters, which were the only places that people of color were allowed to sit at the time. The phrase was meant to poke fun at the idea of people of color engaging in intellectualism."
+2,manpower,"As a synonym for work – as in “man hours,” “man the inbox,” “man the conference booth,” – this is unnecessarily gendered language. Try using work instead."
+2,wives,Consider being more inclusive through use of 'spouses or partners'.
+2,husbands,Consider being more inclusive through use of 'spouses or partners'.
+2,boyfriends,Consider being more inclusive through use of 'spouses or partners'.
+2,girlfriends,Consider being more inclusive through use of 'spouses or partners'.
+2,mothering,Consider being more inclusive through use of 'parenting'.
+2,fathering,Consider being more inclusive through use of 'parenting'.
+3,minority,Consider being more inclusive through use of 'marginalized group or underrepresented group'. 
+3,minorities,Consider being more inclusive through use of 'marginalized groups or underrepresented groups'. 
+2,dude,Consider being more inclusive through the use of 'friend'
+2,buddy,Consider being more inclusive through the use of 'friend'
+2,fiancée,Consider being more inclusive through the use of 'betrothed'
+2,fiancé,Consider being more inclusive through the use of 'betrothed'
+2,granddaughter,Consider being more inclusive through the use of 'grandchild'
+2,grandson,Consider being more inclusive through the use of 'grandchild'
+2,grandmother,Consider being more inclusive through the use of 'grandparent'
+2,grandfather,Consider being more inclusive through the use of 'grandparent'
+2,sister,Consider being more inclusive language through the use of ‘sibling’
+2,brother,Consider being  more inclusive language through the use of ‘sibling’
+2,son,Consider being more inclusive language through the use of ‘child’
+2,daughter,Consider being more inclusive language through the use of ‘child’
+2,businessman,Consider being more inclusive language through the use of ‘businessperson’
+2,sister,Consider being more inclusive language through the use of ‘sibling’
+2,brother,Consider being  more inclusive language through the use of ‘sibling’

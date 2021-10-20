@@ -43,12 +43,13 @@ namespace MBADCases.Controllers
             {
                 _speechtotextservice.Gettenant(tenantid);
 
-              AAIResponse oRet=  _speechtotextservice.PostSpeech(oaireq);
+                AAITranscriptResponse oRet =  _speechtotextservice.PostSpeech(oaireq);
 
                 SppechToTextResponse osp = new SppechToTextResponse();
                 osp._id = oRet.id;
                 osp.status = oRet.status;
-                
+                osp.tenantid = tenantid;
+
                 oms = _speechtotextservice.SetMessage(ICallerType.CASE, "", sj, "POST", "UPDATE", "Case update", usrid, null);
                 return StatusCode(Microsoft.AspNetCore.Http.StatusCodes.Status200OK, osp);
             }
@@ -109,34 +110,66 @@ namespace MBADCases.Controllers
                 //_speechtotextservice.WriteDurationLog(otran);
 
                 SppechToTextResponse osp = new SppechToTextResponse();
-                osp._id = oRet.AIResponse.id;
-                osp.status = oRet.AIResponse.status;
-                osp.text = oRet.AIResponse.text;
+                osp._id = oRet.TranId;
+                if (oRet.AIResponse != null)
+                {
+                    osp.status = oRet.AIResponse.status;
+                    osp.text = oRet.AIResponse.text;
+                    osp.confidence = oRet.AIResponse.confidence;
 
-                osp.words = oRet.AIResponse.words;
-                if (oRet.AIResponse.phrases.Count == 0)
-                {
-                    var ophrase = new phrase() { text = "No passphrase found", feedback = "", confidence = 0.9999, start = 0, end = 0, occurances = 0 };
-                    oRet.AIResponse.phrases.Add(ophrase);
-                    osp.phrases = oRet.AIResponse.phrases;
+                    if (oRet.AIResponse.words == null)
+                    {
+                        osp.words = new List<owords>();
+                    }
+                    else
+                    {
+                        osp.words = (List<owords>)oRet.AIResponse.words;
+                    }
+
+                    if (oRet.AIResponse.phrases == null || oRet.AIResponse.phrases.Count == 0)
+                    {
+                        //var ophrase = new phrase() { text = "No phrases found", feedback = "", confidence = 0.9999, start = 0, end = 0, occurances = 0 };
+                        //oRet.AIResponse.phrases = new List<phrase>();
+                        //oRet.AIResponse.phrases.Add(ophrase);
+                        osp.phrases = oRet.AIResponse.phrases;
+                        osp.total_phrases = 0;
+                    }
+                    else
+                    {
+                        osp.phrases = oRet.AIResponse.phrases;
+                        osp.total_phrases = osp.phrases.Count;
+                    }
+                    if (oRet.AIResponse.commonnames == null || oRet.AIResponse.commonnames.Count == 0)
+                    {
+                        //var ocommonname = new commonname() { name = "No common names found",   tipnote="", start = 0, end = 0, occurances = 0 };
+                        //oRet.AIResponse.commonnames = new List<commonname>();
+                        //oRet.AIResponse.commonnames.Add(ocommonname);
+                        osp.commonnames = oRet.AIResponse.commonnames;
+                        osp.total_commonnames = 0;
+                    }
+                    else
+                    {
+                        osp.commonnames = oRet.AIResponse.commonnames;
+                        osp.total_commonnames = osp.commonnames.Count;
+                    }
+
+                    if (oRet.AIResponse.feedback != null)
+                    {
+                        osp.feedback = oRet.AIResponse.feedback;
+                    }
+                    osp.feedbackcount = oRet.AIResponse.feedbackcount;
+                    osp.totalfeedbackcount = oRet.AIResponse.totalfeedbackcount;
+                    osp.audio_duration = oRet.AIResponse.audio_duration;
                 }
-                else
+
+                osp.error = oRet.error;
+                osp.tenantid = tenantid;
+                if (osp.words != null)
                 {
-                    osp.phrases = oRet.AIResponse.phrases;
+                    osp.total_words = osp.words.Count;
                 }
-                if (oRet.AIResponse.commonnames.Count == 0)
-                {
-                    var ocommonname = new commonname() { name = "No common names found",   tipnote="", start = 0, end = 0, occurances = 0 };
-                    oRet.AIResponse.commonnames.Add(ocommonname);
-                    osp.commonnames = oRet.AIResponse.commonnames;
-                }
-                else
-                {
-                    osp.commonnames = oRet.AIResponse.commonnames;
-                }
-                 
-                osp.feedbackcount = oRet.AIResponse.feedbackcount ;
-                osp.audio_duration = oRet.AIResponse.audio_duration;
+              
+               
                 oms = _speechtotextservice.SetMessage(ICallerType.CASE, "", "", "POST", "UPDATE", "SpeechtoText", usrid, null);
                 return StatusCode(Microsoft.AspNetCore.Http.StatusCodes.Status200OK, osp);
             }
@@ -168,6 +201,7 @@ namespace MBADCases.Controllers
                 ocasetype.Updatedate = DateTime.UtcNow.ToString();
                 var oretcase = _speechtotextservice.Create(ocasetype);
 
+                
                 sresponse = Newtonsoft.Json.JsonConvert.SerializeObject(oretcase);
                 var oms = _speechtotextservice.SetMessage(new Message() { Messageype = "Status200OK", Messagecode = "200", Callerid = oretcase._id, Callerrequest = srequest, Callresponse = sresponse, Callerrequesttype = "PUT", Callertype = "CASETYPE", MessageDesc = smessage, Tenantid = tenantid, Userid = usrid });
                 return StatusCode(Microsoft.AspNetCore.Http.StatusCodes.Status200OK, new SpeechtotextmapResponse(ocasetype, oms));
