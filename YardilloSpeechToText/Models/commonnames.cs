@@ -16,4 +16,17 @@ namespace YardilloSpeechToText.Models
         public string tip { get; set; }
 
     }
+
+    public class commonaispeechid
+    {
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string _id { get; set; }
+        public string Sourceid { get; set; }
+        public string Tranid { get; set; }
+        public string Tenantid { get; set; }
+        public string Speechid { get; set; }
+        public string Createdate { get; set; }
+        public string Createuser { get; set; }
+    }
 }

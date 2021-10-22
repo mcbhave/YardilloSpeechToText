@@ -20,6 +20,7 @@ namespace MBADCases.Controllers
     public class SpeechController : ControllerBase
     {
         private readonly SpeechtotextService _speechtotextservice;
+    
         public SpeechController(SpeechtotextService  speechtotextserviceervice)
         {
             _speechtotextservice = speechtotextserviceervice;
@@ -29,26 +30,49 @@ namespace MBADCases.Controllers
         [HttpPost(Name = "SpeechToText")]
         public IActionResult Post(Speechtotext ocase)
         {
+            SppechToTextResponse osp = new SppechToTextResponse();
+            string usecache = HttpContext.Request.Query["usecache"];
+            bool ucache = true;
+            if (usecache != null && usecache.ToLower() == "false")
+            {
+                ucache = false;
+            }
             Message oms;
             var tenantid = HttpContext.Session.GetString("mbadtanent");
             var usrid = HttpContext.Session.GetString("mbaduserid");
 
             string sj = ocase.ToJson();
             ocase.Updateuser = usrid;
+            var yathuiden = HttpContext.Session.GetString("yathuid");
+
+            string yathuidde = string.Empty;
+            if (yathuiden != null)
+            {
+                helperservice.VaultCrypt ovrcr = new helperservice.VaultCrypt("Y-Auth-userid");
+                yathuidde = ovrcr.Decrypt(yathuiden);
+                ocase.Updateuser = yathuidde;
+            }
             //string id = ocase._id;
             //ocase._id = id;
 
-            AAIRequest oaireq = new AAIRequest() { audio_url = ocase.audio_url };
+            AAIRequest oaireq = new AAIRequest() { audio_url = ocase.audio_url ,webhook_url=ocase.webhook_url.ToString() };
             try
             {
                 _speechtotextservice.Gettenant(tenantid);
 
-                AAITranscriptResponse oRet =  _speechtotextservice.PostSpeech(oaireq);
+                Speechtotext oRet =  _speechtotextservice.PostSpeech(oaireq, ocase, ucache,usrid);
 
-                SppechToTextResponse osp = new SppechToTextResponse();
-                osp._id = oRet.id;
-                osp.status = oRet.status;
+               
+                osp._id = oRet._id;
+                osp.status = oRet.Status;
                 osp.tenantid = tenantid;
+                osp.usage_count_audio = oRet.usage_count_audio;
+                osp.usage_count_feedback = oRet.usage_count_feedback;
+
+                osp.words = new List<owords>();
+                osp.phrases = new List<phrase>();
+                osp.feedback = new List<feedback>();
+                osp.commonnames = new List<commonname>();
 
                 oms = _speechtotextservice.SetMessage(ICallerType.CASE, "", sj, "POST", "UPDATE", "Case update", usrid, null);
                 return StatusCode(Microsoft.AspNetCore.Http.StatusCodes.Status200OK, osp);
@@ -58,15 +82,19 @@ namespace MBADCases.Controllers
                 oms = new Message();
                 oms.MessageDesc = ex.ToString();
                 oms = _speechtotextservice.SetMessage(oms);
-                return StatusCode(Microsoft.AspNetCore.Http.StatusCodes.Status417ExpectationFailed, new CaseResponse(ocase._id, oms));
+                osp.error = ex.Message;
+                osp.status = "error";
+                return StatusCode(Microsoft.AspNetCore.Http.StatusCodes.Status417ExpectationFailed, osp);
             }
 
         }
 
         [MapToApiVersion("1.0")]
-        [HttpGet("{id}", Name = "getTranscript")]
+        [HttpGet("{id:length(24)}", Name = "getTranscript")]
         public IActionResult Get(string id )
         {
+
+            
             string usecache = HttpContext.Request.Query["usecache"];
 
             Message oms;
@@ -80,12 +108,15 @@ namespace MBADCases.Controllers
                 helperservice.VaultCrypt ovrcr = new helperservice.VaultCrypt("Y-Auth-userid");
                 yathuidde=  ovrcr.Decrypt(yathuiden) ;
             }
-           
+
             //string sj = ocase.ToJson();
             //ocase.Updateuser = usrid;
             //string id = ocase._id;
             //ocase._id = id;
-
+            SppechToTextResponse osp = new SppechToTextResponse();
+            osp.userid = yathuidde;
+            osp.tenantid = tenantid;
+            osp._id = id;
             try
             {
                 _speechtotextservice.Gettenant(tenantid);
@@ -104,19 +135,21 @@ namespace MBADCases.Controllers
                 {
                     ucache = false;
                 }
-
+              
                 Speechtotext oRet = _speechtotextservice.GetTranscript(id, otran, ucache);
                               
                 //_speechtotextservice.WriteDurationLog(otran);
 
-                SppechToTextResponse osp = new SppechToTextResponse();
-                osp._id = oRet.TranId;
+             
+                osp._id = oRet._id;
                 if (oRet.AIResponse != null)
                 {
                     osp.status = oRet.AIResponse.status;
                     osp.text = oRet.AIResponse.text;
+                    osp.highlitedtext = oRet.AIResponse.highlitedtext;
                     osp.confidence = oRet.AIResponse.confidence;
-
+                    osp.usage_count_audio = oRet.usage_count_audio;
+                    osp.usage_count_feedback = oRet.usage_count_feedback;
                     if (oRet.AIResponse.words == null)
                     {
                         osp.words = new List<owords>();
@@ -176,9 +209,18 @@ namespace MBADCases.Controllers
             catch (Exception ex)
             {
                 oms = new Message();
-                oms.MessageDesc = ex.ToString();
+                oms.MessageDesc = ex.Message;
+                oms.Tenantid =tenantid;
+                oms.Userid = yathuiden;
+                oms.Callerid = usrid;
+                oms.Callerrequest = id;
+                oms.Messageype = "ERROR";
                 oms = _speechtotextservice.SetMessage(oms);
-                return StatusCode(Microsoft.AspNetCore.Http.StatusCodes.Status417ExpectationFailed,   oms );
+
+                osp.error = ex.Message;
+                osp.status = "error";
+              
+                return StatusCode(Microsoft.AspNetCore.Http.StatusCodes.Status417ExpectationFailed, osp);
             }
 
         }

@@ -75,8 +75,9 @@ namespace MBADCases
             services.AddSingleton<TenantService>();
             services.AddSingleton<ScheduleService>();
             services.AddSingleton<SpeechtotextService>();
+  
             
-            
+
 
             //services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions);
 

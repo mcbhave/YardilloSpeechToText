@@ -23,6 +23,9 @@ namespace MBADCases.Models
         public string SpeechToTextCollection { get; set; }
         public string SpeechToTextMAPCollection { get; set; }
         public string CommonnamesCollection { get; set; }
+
+        public string SpeechToTextAttrCollection { get; set; }
+        public string CommonaispeechidCollection { get; set; }
     }
 
     public interface ICasesDatabaseSettings
@@ -43,6 +46,12 @@ namespace MBADCases.Models
         public string SpeechToTextMAPCollection { get; set; }
 
         public string CommonnamesCollection { get; set; }
+
+
+        public string CommonaispeechidCollection { get; set; }
+        
+
+        public string SpeechToTextAttrCollection { get; set; }
 
     }
 }

@@ -39,4 +39,6 @@ namespace MBADCases.Models
         public const string VAULT = "VAULT";
         public const string CASE_SEARCH = "CASE_SEARCH";
     }
+
+ 
 }

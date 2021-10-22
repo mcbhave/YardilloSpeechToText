@@ -14,6 +14,15 @@ namespace MBADCases.Models
         public string _id { get; set; }
         public string TranId { get; set; }
         public string audio_url { get; set; }
+        public int audio_duration { get; set; }
+
+        public int usage_count_audio { get; set; }
+
+        public int usage_count_feedback { get; set; }
+        public object webhook_url { get; set; }
+        public string highlite_start_tag { get; set; }
+
+        public string highlite_end_tag { get; set; }
         public int Duration { get; set; }
         public string Status { get; set; }
         public string Createdate { get; set; }
@@ -24,6 +33,20 @@ namespace MBADCases.Models
 
         public string error { get; set; }
 
+    }
+    
+    public class Speechtotextattr
+    {
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string _id { get; set; }
+        public string TranId { get; set; }
+        public string highlite_start_tag { get; set; }
+        public string highlite_end_tag { get; set; }
+        public string Createdate { get; set; }
+        public string Createuser { get; set; }
+        public string Updatedate { get; set; }
+        public string Updateuser { get; set; }
     }
     public class Speechtotextmap
     {
@@ -45,25 +68,29 @@ namespace MBADCases.Models
     {
         public string audio_url { get; set; }
         public string webhook_url { get; set; }
+      
     }
 
     public class AAITranscriptResponse
     {
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string _id { get; set; }
         public string id { get; set; }
         public string status { get; set; }
-        public string acoustic_model { get; set; }
-        public object audio_duration { get; set; }
-        public string audio_url { get; set; }
-        public object confidence { get; set; }
-        public object dual_channel { get; set; }
-        public bool format_text { get; set; }
-        public string language_model { get; set; }
-        public bool punctuate { get; set; }
-        public object text { get; set; }
-        public object utterances { get; set; }
-        public object webhook_status_code { get; set; }
-        public object webhook_url { get; set; }
-        public object words { get; set; }
+        //public string acoustic_model { get; set; }
+        //public object audio_duration { get; set; }
+        //public string audio_url { get; set; }
+        //public object confidence { get; set; }
+        //public object dual_channel { get; set; }
+        //public bool format_text { get; set; }
+        //public string language_model { get; set; }
+        //public bool punctuate { get; set; }
+        //public object text { get; set; }
+        //public object utterances { get; set; }
+        //public object webhook_status_code { get; set; }
+        //public object webhook_url { get; set; }
+        //public object words { get; set; }
     }
     public class AAIErrorResponse
     {
@@ -81,6 +108,8 @@ namespace MBADCases.Models
         public string status { get; set; }
         public string audio_url { get; set; }
         public string text { get; set; }
+
+        public string highlitedtext { get; set; }
         public List<owords> words { get; set; }
         public object utterances { get; set; }
         public object confidence { get; set; }
@@ -164,17 +193,31 @@ namespace MBADCases.Models
         public string text { get; set; }
         public string feedback { get; set; }
     }
+
+    public class Speechwebhook
+    {
+        public string status { get; set; }
+        public string transcript_id { get; set; }
+    }
     public class SppechToTextResponse
     {
         public string _id { get; set; }
         public string tenantid { get; set; }
+
+        public string userid { get; set; }
         public string status { get; set; }
         public string error { get; set; }
         public int audio_duration { get; set; }
+
+        public int usage_count_audio { get; set; }
+
+        public int usage_count_feedback { get; set; }
         public int feedbackcount { get; set; }
         public int totalfeedbackcount { get; set; }
         public object confidence { get; set; }
         public string text { get; set; }
+
+        public string highlitedtext { get; set; }
         public int total_words { get; set; }
         public int total_phrases { get; set; }
         public int total_commonnames { get; set; }
