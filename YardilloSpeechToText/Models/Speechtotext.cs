@@ -138,6 +138,8 @@ namespace MBADCases.Models
         public ContentSafetyLabels content_safety_labels { get; set; }
         public IabCategoriesResult iab_categories_result { get; set; }
         public List<phrase> phrases { get; set; }
+     
+        
 
         public List<feedback> feedback { get; set; }
         public string error { get; set; }
@@ -163,7 +165,7 @@ namespace MBADCases.Models
         public int start { get; set; }
         public string text { get; set; }
         public string feedback { get; set; }
-
+        public string category { get; set; }
         public int occurances { get; set; }
     }
     public class feedback
@@ -176,6 +178,8 @@ namespace MBADCases.Models
         public string text { get; set; }
         
         public int occurances { get; set; }
+
+        public string category { get; set; }
     }
     public class ContentSafetyLabels
     {
@@ -196,6 +200,7 @@ namespace MBADCases.Models
 
     public class Speechwebhook
     {
+        public string _id { get; set; }
         public string status { get; set; }
         public string transcript_id { get; set; }
     }

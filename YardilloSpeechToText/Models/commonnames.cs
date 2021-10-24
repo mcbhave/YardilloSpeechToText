@@ -23,6 +23,8 @@ namespace YardilloSpeechToText.Models
         [BsonRepresentation(BsonType.ObjectId)]
         public string _id { get; set; }
         public string Sourceid { get; set; }
+        public string Status { get; set; }
+        public string Error { get; set; }
         public string Tranid { get; set; }
         public string Tenantid { get; set; }
         public string Speechid { get; set; }

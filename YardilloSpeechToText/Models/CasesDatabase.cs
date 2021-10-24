@@ -26,6 +26,9 @@ namespace MBADCases.Models
 
         public string SpeechToTextAttrCollection { get; set; }
         public string CommonaispeechidCollection { get; set; }
+        public string SpeechWebHook { get; set; }
+
+        public string AIServiceBaseURL { get; set; }
     }
 
     public interface ICasesDatabaseSettings
@@ -52,6 +55,11 @@ namespace MBADCases.Models
         
 
         public string SpeechToTextAttrCollection { get; set; }
+
+        public string SpeechWebHook { get; set; }
+
+        public string AIServiceBaseURL { get; set; }
+ 
 
     }
 }

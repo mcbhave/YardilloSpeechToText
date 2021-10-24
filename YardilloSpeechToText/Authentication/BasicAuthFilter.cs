@@ -70,12 +70,16 @@ namespace MBADCases.Authentication
                 omess.Userid = rapiduserid;
                 omess.YAuthSource = sauthsrc;
 
-                if (srapidsecretkey != "1f863a60-f3b6-11eb-bc3e-c3f329db9ee7" && srapidsecretkey != "6acc1280-fde1-11eb-b480-3f057f12dc26" && srapidsecretkey != "ade9f2f0-fe3e-11eb-8e8b-29cf15887162")
+                //6acc1280-fde1-11eb-b480-3f057f12dc26 - Yardillo
+                //ade9f2f0-fe3e-11eb-8e8b-29cf15887162 - MongoDBWix
+                //d602ee50-2f9d-11ec-9121-f55b1f38643f - is speech
+
+                if (srapidsecretkey != "1f863a60-f3b6-11eb-bc3e-c3f329db9ee7" && srapidsecretkey != "6acc1280-fde1-11eb-b480-3f057f12dc26" && srapidapikey!= "ade9f2f0-fe3e-11eb-8e8b-29cf15887162" && srapidsecretkey != "d602ee50-2f9d-11ec-9121-f55b1f38643f")
                 { allpass = false; omess.Messageype = "Unauthorized"; omess.Messagecode =  "00001"; }
                
                 if (allpass) 
                 { 
-                    if (sauthsrc != "yardillo" && sauthsrc != "WixAdapter")
+                    if (sauthsrc != "yardillo" && sauthsrc != "WixAdapter" && sauthsrc!= "YardilloSpeech")
                     { allpass = false; omess.Messageype = "Unauthorized"; omess.Messagecode = "00002"; }
                      
                 }
@@ -84,7 +88,7 @@ namespace MBADCases.Authentication
                 {
                     xrapidhost = context.HttpContext.Request.Headers["x-rapidapi-host"];
                     omess.Callerid = xrapidhost;
-                    if (xrapidhost != "mbad.p.rapidapi.com" && xrapidhost != "yardillo.p.rapidapi.com" && xrapidhost != "mongodb-wix.p.rapidapi.com")
+                    if (xrapidhost != "mbad.p.rapidapi.com" && xrapidhost != "yardillo.p.rapidapi.com" && xrapidhost != "mongodb-wix.p.rapidapi.com" && xrapidhost!= "speech-to-text-feedback.p.rapidapi.com")
                     { allpass = false; omess.Messageype = "Unauthorized"; omess.Messagecode = "00003"; }
 
                 }

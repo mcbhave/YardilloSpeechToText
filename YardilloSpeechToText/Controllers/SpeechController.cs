@@ -55,7 +55,7 @@ namespace MBADCases.Controllers
             //string id = ocase._id;
             //ocase._id = id;
 
-            AAIRequest oaireq = new AAIRequest() { audio_url = ocase.audio_url ,webhook_url=ocase.webhook_url.ToString() };
+            AAIRequest oaireq = new AAIRequest() { audio_url = ocase.audio_url };
             try
             {
                 _speechtotextservice.Gettenant(tenantid);

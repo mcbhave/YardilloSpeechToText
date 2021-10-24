@@ -31,6 +31,25 @@ namespace YardilloSpeechToText.Controllers
                 {
                     commonaispeechid objid = _speechtotextservice.GettenantbyAIId(id.transcript_id);
 
+                    if (objid != null) {
+                        bool donotprocess=false;
+                        bool ret = true;
+                        if (objid.Status != null) { if (objid.Status == "completed" || objid.Status == "error") { donotprocess = true; } }
+
+                        if (donotprocess == false)
+                        {
+                            _speechtotextservice.Gettenant(objid.Tenantid);
+                             ret = _speechtotextservice.Posttowebhook(id, objid);
+                        }
+                      
+
+                       
+                        if (ret == false)
+                        {
+                            return StatusCode(Microsoft.AspNetCore.Http.StatusCodes.Status500InternalServerError, "");
+                        }
+                    }
+
                 }
 
                 return StatusCode(Microsoft.AspNetCore.Http.StatusCodes.Status200OK, "");

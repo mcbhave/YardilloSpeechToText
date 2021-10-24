@@ -23,8 +23,10 @@ namespace MBADCases.Services
         ICasesDatabaseSettings _settings;
         private MongoClient _client;
         private string _tenantid;
-        private const string _assemblyai_server_token = "5553a2488b5a4d8db6b18a055143a880";
-        private const string _assemblyai_server_url = "https://api.assemblyai.com/v2/transcript";
+        private   string _assemblyai_server_token = "5553a2488b5a4d8db6b18a055143a880";
+        private   string _assemblyai_server_url = "https://api.assemblyai.com/v2/transcript";
+        private string _speech_webhook = "https://api.assemblyai.com/v2/transcript";
+
         public SpeechtotextService(ICasesDatabaseSettings settings)
         {
             try
@@ -32,6 +34,8 @@ namespace MBADCases.Services
                 _settings = settings;
                 _client = new MongoClient(settings.ConnectionString);
                 MBADDatabase = _client.GetDatabase(settings.DatabaseName);
+                _speech_webhook = _settings.SpeechWebHook;
+              
             }
             catch { throw; }
         }
@@ -61,6 +65,69 @@ namespace MBADCases.Services
             commonaispeechid c = _commonaispeechid.Find(c => c.Tranid == tranid).FirstOrDefault();
             if (c == null) { throw new Exception("Invalid _id"); }
             return c;
+        }
+        public bool Posttowebhook(Speechwebhook sweb,commonaispeechid objId)
+        {
+            try
+            {
+                Speechtotext c = _speechtotextcollection.Find(c => c.TranId == objId.Tranid).FirstOrDefault();
+                if (c == null) { return false;  }
+                if (c.Status.ToLower() != "completed")
+                {
+                    string webhook = (string)c.webhook_url;
+                    if (webhook.Contains("speechwebin"))
+                    {
+                        //dont do anything
+                    }
+                    else
+                    {
+                        string scontent = "";
+                        HttpClient webclient = new HttpClient();
+
+                        sweb._id = c._id;
+                        sweb.transcript_id = c._id;
+                        scontent = Newtonsoft.Json.JsonConvert.SerializeObject(sweb);
+                        try
+                        {
+                          string  responseBody = helperservice.PostRequest(webhook, scontent, webclient);
+                           Message oms = new Message();
+                            oms.Messageype = "successful";                        
+                            oms.Callerid = c.TranId;
+                            oms.Callresponse = responseBody;
+                            oms.Callerrequest = scontent;
+                            oms = SetMessage(oms);
+
+                            _commonaispeechid = MBADDatabase.GetCollection<commonaispeechid>(_settings.CommonaispeechidCollection);
+                            objId.Status = "completed";
+                           _commonaispeechid.ReplaceOne(c => c._id == objId._id,objId);
+
+                            return true;
+                        }
+                        catch (Exception eee)
+                        {
+                            Message oms = new Message();
+                            oms.Messageype = "error";
+                            oms.MessageDesc = eee.Message;
+                            oms.Callerid = c.TranId;
+                            oms.Callresponse = "";
+                            oms.Callerrequest = scontent;
+                            oms = SetMessage(oms);
+                            oms.Messageype = "ERROR";
+                            oms.MessageDesc = eee.ToString();
+                            oms = SetMessage(oms);
+                            objId.Status = "error";
+                            objId.Error = eee.Message;
+                            _commonaispeechid.ReplaceOne(c => c._id == objId._id, objId);
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            }
+            catch  
+            {
+                return false;
+            }
         }
         public Speechtotext GetTranscript(string id,Speechtotext otran,bool usecache)
         {
@@ -163,11 +230,13 @@ namespace MBADCases.Services
                         if (otran.usage_count_feedback == 0) { c.usage_count_feedback = -1; } //keep zero no charge first time
                          
                         if (otran.usage_count_audio == 0) { c.usage_count_audio = 1; }
-                        Getsuggestions(oRet, feedbackcount);
+                        Getsuggestions(oRet, feedbackcount, c);
                     }
                    
                     otran.AIResponse = oRet;
                     otran._id = c._id;
+                    otran.highlite_start_tag = c.highlite_start_tag;
+                    otran.highlite_end_tag = c.highlite_start_tag;
                     _speechtotextcollection.ReplaceOne(ocase => ocase._id == c._id, otran);
                     return otran;
                 }
@@ -184,7 +253,7 @@ namespace MBADCases.Services
                         if (c.usage_count_feedback == 0) { c.usage_count_feedback = 1; }
                         otran.usage_count_feedback += c.usage_count_feedback;
                         if (c.usage_count_audio == 0) { c.usage_count_audio = 1; }
-                        Getsuggestions(oRet, feedbackcount);
+                        Getsuggestions(oRet, feedbackcount ,c);
                         otran.usage_count_feedback  = c.usage_count_feedback +1;
                     }
 
@@ -197,7 +266,8 @@ namespace MBADCases.Services
                     otran.Status = c.Status;
                     otran.error = c.error;
                     otran.usage_count_audio = c.usage_count_audio;
-                   
+                    otran.highlite_start_tag = c.highlite_start_tag;
+                    otran.highlite_end_tag = c.highlite_start_tag;
                     if (oRet.status == "completed")
                     {
                         _speechtotextcollection.ReplaceOne(ocase => ocase._id == c._id, otran);
@@ -249,6 +319,7 @@ namespace MBADCases.Services
 
                 if (usecache == false)
                 {
+                    osptxt.webhook_url = _speech_webhook;
 
                     HttpClient _client = new HttpClient();
                     _client.DefaultRequestHeaders.Add("authorization", _assemblyai_server_token);
@@ -267,18 +338,18 @@ namespace MBADCases.Services
 
                     AAITranscriptResponse oairesp = Newtonsoft.Json.JsonConvert.DeserializeObject<AAITranscriptResponse>(responseBody);
                     bool alldefault = false;
-                    Speechtotextattr oattrb = new Speechtotextattr();
-                    oattrb.highlite_start_tag = ocase.highlite_start_tag;
-                    oattrb.highlite_end_tag = ocase.highlite_end_tag;
-                    SetDefaultAttr(oattrb, alldefault);
+                    //Speechtotextattr oattrb = new Speechtotextattr();
+                    //oattrb.highlite_start_tag = ocase.highlite_start_tag;
+                    //oattrb.highlite_end_tag = ocase.highlite_end_tag;
+                    SetDefaultAttr(ocase, alldefault);
 
                     otran.TranId = oairesp.id;
                     otran.Status = oairesp.status;
                     otran.AIResponse = new AAIResponse();
                     otran.audio_url = ocase.audio_url;
                     otran.webhook_url = ocase.webhook_url;
-                    otran.highlite_start_tag = oattrb.highlite_start_tag;
-                    otran.highlite_end_tag = oattrb.highlite_end_tag;
+                    otran.highlite_start_tag = ocase.highlite_start_tag;
+                    otran.highlite_end_tag = ocase.highlite_end_tag;
                     otran.usage_count_audio = 1;
                     otran.usage_count_feedback = 0;
                     _speechtotextcollection.InsertOneAsync(otran);
@@ -308,7 +379,7 @@ namespace MBADCases.Services
             }
 
         }
-        private void SetDefaultAttr(Speechtotextattr oattr, bool alldefault)
+        private void SetDefaultAttr(Speechtotext  oattr, bool alldefault)
         {
             if (oattr.highlite_start_tag == null || oattr.highlite_start_tag == "") { oattr.highlite_start_tag = "[color =#FF5733][b][i]"; alldefault = true; }
             if (oattr.highlite_end_tag == null || oattr.highlite_end_tag == "") { oattr.highlite_end_tag = "[/i][/b][/color]"; alldefault = true; }
@@ -340,7 +411,7 @@ namespace MBADCases.Services
 
         }
 
-        public void Getsuggestions(AAIResponse oRet, int feedbackcount )
+        public void Getsuggestions(AAIResponse oRet, int feedbackcount, Speechtotext speechtotxt )
         {
             int totaloccurances = 0;
             try
@@ -351,13 +422,13 @@ namespace MBADCases.Services
                 bool alldefault = false;
                 //string highlite_start_tag = "";
                 //string highlite_end_tag = "";
-                Speechtotextattr objattr = _speechtotextattrcollection.Find(a => a.TranId == oRet.id).FirstOrDefault();
-                if (objattr == null) { objattr = new Speechtotextattr(); }
-                
-                    SetDefaultAttr(objattr, alldefault);
-               
-                //objattr.highlite_start_tag = highlite_end_tag;
-                //objattr.highlite_end_tag = highlite_end_tag;
+                //Speechtotextattr objattr = _speechtotextattrcollection.Find(a => a.TranId == oRet.id).FirstOrDefault();
+                //if (objattr == null) { objattr = new Speechtotextattr(); }
+
+               SetDefaultAttr(speechtotxt, alldefault);
+
+                //objattr.highlite_start_tag = speechtotxt.highlite_end_tag;
+                //objattr.highlite_end_tag = speechtotxt.highlite_end_tag;
 
                 //sanatize the word
                 string smatchword;//= oRet.text.Replace(".", "");
@@ -386,9 +457,9 @@ namespace MBADCases.Services
                                     {
                                         sword.feedback = w.Feedbacktext;
                                         feedbackcount += 1;
-                                        oRet.highlitedtext = oRet.highlitedtext.Replace(sword.text, objattr.highlite_start_tag + sword.text + objattr.highlite_end_tag);
+                                        oRet.highlitedtext = oRet.highlitedtext.Replace(sword.text, speechtotxt.highlite_start_tag + sword.text + speechtotxt.highlite_end_tag);
 
-                                        oRet.feedback.Add(new feedback { confidence=sword.confidence, start=sword.start,end=sword.end, phrase= sword.text, text= sword.feedback });
+                                        oRet.feedback.Add(new feedback { confidence=sword.confidence, start=sword.start,end=sword.end, phrase= sword.text, text= sword.feedback,category=w.Labeltext });
                                     }                                 
                                 }
                                 else
@@ -397,15 +468,15 @@ namespace MBADCases.Services
                                     if (oRet.phrases == null) { oRet.phrases = new List<phrase>(); }
                                     int startpos =oRet.text.IndexOf(w.Phrasetext);
                                     int endpos = startpos + w.Phrasetext.Length;
-                                    var ophrase = new phrase() { text = w.Phrasetext, feedback = w.Feedbacktext, confidence = 0.9998, start =  startpos,end=endpos, occurances=1 };
+                                    var ophrase = new phrase() { text = w.Phrasetext, feedback = w.Feedbacktext, confidence = 0.9998, start =  startpos,end=endpos, occurances=1,category=w.Labeltext };
                                    var oexistingphrase= oRet.phrases.Find(f => f.text.ToUpper() == w.Phrasetext.ToUpper());
                                     if (oexistingphrase== null)
                                     {
                                         oRet.phrases.Add(ophrase);
                                         feedbackcount +=1;
                                         totaloccurances += 1;
-                                        oRet.highlitedtext = oRet.highlitedtext.Replace(w.Phrasetext, objattr.highlite_start_tag + w.Phrasetext + objattr.highlite_end_tag);
-                                        oRet.feedback.Add(new feedback { text = w.Feedbacktext, phrase = w.Phrasetext, confidence = 0.9998, start = startpos, end = endpos, occurances = 1 });
+                                        oRet.highlitedtext = oRet.highlitedtext.Replace(w.Phrasetext, speechtotxt.highlite_start_tag + w.Phrasetext + speechtotxt.highlite_end_tag);
+                                        oRet.feedback.Add(new feedback { text = w.Feedbacktext, phrase = w.Phrasetext, confidence = 0.9998, start = startpos, end = endpos, occurances = 1,category=w.Labeltext });
                                     }
                                     else
                                     {
