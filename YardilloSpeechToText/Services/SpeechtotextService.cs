@@ -82,24 +82,42 @@ namespace MBADCases.Services
                     else
                     {
                         string scontent = "";
-                        HttpClient webclient = new HttpClient();
+                        string responseBody = "";
+                        //HttpClient webclient = new HttpClient();
 
                         sweb._id = c._id;
                         sweb.transcript_id = c._id;
-                        scontent = Newtonsoft.Json.JsonConvert.SerializeObject(sweb);
+                        //scontent = Newtonsoft.Json.JsonConvert.SerializeObject(sweb);
                         try
                         {
-                          string  responseBody = helperservice.PostRequest(webhook, scontent, webclient);
+                            HttpClient _client = new HttpClient();
+                            _client.DefaultRequestHeaders.Add("authorization", _assemblyai_server_token);
+                          
+                            var serialized = new StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(sweb), Encoding.UTF8, "application/json");
+
+                            using (HttpResponseMessage response = _client.PostAsync(webhook, serialized).GetAwaiter().GetResult())
+                            {
+                                response.EnsureSuccessStatusCode();
+                                //slog.Append("Response: ");
+                                responseBody = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                                //slog.Append(responseBody);
+
+                            }
+
+                            //string  responseBody = helperservice.PostRequest(webhook, scontent, webclient);
                            Message oms = new Message();
                             oms.Messageype = "successful";                        
                             oms.Callerid = c.TranId;
                             oms.Callresponse = responseBody;
                             oms.Callerrequest = scontent;
+                            
                             oms = SetMessage(oms);
 
                             _commonaispeechid = MBADDatabase.GetCollection<commonaispeechid>(_settings.CommonaispeechidCollection);
                             objId.Status = "completed";
-                           _commonaispeechid.ReplaceOne(c => c._id == objId._id,objId);
+                            objId.Error = "";
+                            objId.Response = responseBody;
+                            _commonaispeechid.ReplaceOne(c => c._id == objId._id,objId);
 
                             return true;
                         }
@@ -117,6 +135,7 @@ namespace MBADCases.Services
                             oms = SetMessage(oms);
                             objId.Status = "error";
                             objId.Error = eee.Message;
+                            
                             _commonaispeechid.ReplaceOne(c => c._id == objId._id, objId);
                             return false;
                         }
@@ -253,6 +272,9 @@ namespace MBADCases.Services
                         if (c.usage_count_feedback == 0) { c.usage_count_feedback = 1; }
                         otran.usage_count_feedback += c.usage_count_feedback;
                         if (c.usage_count_audio == 0) { c.usage_count_audio = 1; }
+                        oRet.phrases = new List<phrase>();
+                        oRet.feedback = new List<feedback>();
+                        oRet.highlitedtext = oRet.text;
                         Getsuggestions(oRet, feedbackcount ,c);
                         otran.usage_count_feedback  = c.usage_count_feedback +1;
                     }
@@ -458,8 +480,8 @@ namespace MBADCases.Services
                                         sword.feedback = w.Feedbacktext;
                                         feedbackcount += 1;
                                         oRet.highlitedtext = oRet.highlitedtext.Replace(sword.text, speechtotxt.highlite_start_tag + sword.text + speechtotxt.highlite_end_tag);
-
-                                        oRet.feedback.Add(new feedback { confidence=sword.confidence, start=sword.start,end=sword.end, phrase= sword.text, text= sword.feedback,category=w.Labeltext });
+                                        feedback fbb = new feedback { confidence = sword.confidence, start = sword.start, end = sword.end, phrase = sword.text, text = sword.feedback, category = w.Labeltext };
+                                        oRet.feedback.Add(fbb);
                                     }                                 
                                 }
                                 else
@@ -476,7 +498,8 @@ namespace MBADCases.Services
                                         feedbackcount +=1;
                                         totaloccurances += 1;
                                         oRet.highlitedtext = oRet.highlitedtext.Replace(w.Phrasetext, speechtotxt.highlite_start_tag + w.Phrasetext + speechtotxt.highlite_end_tag);
-                                        oRet.feedback.Add(new feedback { text = w.Feedbacktext, phrase = w.Phrasetext, confidence = 0.9998, start = startpos, end = endpos, occurances = 1,category=w.Labeltext });
+                                        feedback fbbb = new feedback { text = w.Feedbacktext, phrase = w.Phrasetext, confidence = 0.9998, start = startpos, end = endpos, occurances = 1, category = w.Labeltext };
+                                        oRet.feedback.Add(fbbb);
                                     }
                                     else
                                     {

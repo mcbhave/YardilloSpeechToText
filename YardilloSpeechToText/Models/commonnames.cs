@@ -30,5 +30,7 @@ namespace YardilloSpeechToText.Models
         public string Speechid { get; set; }
         public string Createdate { get; set; }
         public string Createuser { get; set; }
+
+        public string Response { get; set; }
     }
 }
